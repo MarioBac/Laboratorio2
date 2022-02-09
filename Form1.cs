@@ -21,7 +21,7 @@ namespace WindowsFormsApp2
         {
            
                 webBrowser1.Navigate(new Uri(comboBox1.SelectedItem.ToString()));
-                webBrowser1.Navigate(new Uri(comboBox1.SelectedItem.ToString()));
+                
 
         }
 
