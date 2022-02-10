@@ -30,6 +30,7 @@ namespace WindowsFormsApp2
 
                 }
 
+
                 else if (uri.Contains(".") == false)
                 {
                     uri = "http://www.google.com/search?q=" + uri;
