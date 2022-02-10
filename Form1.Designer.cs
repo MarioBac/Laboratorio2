@@ -37,6 +37,7 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.Regresar = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.Salir = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,7 +74,7 @@
             this.webBrowser1.Location = new System.Drawing.Point(96, 61);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
-            this.webBrowser1.Size = new System.Drawing.Size(759, 388);
+            this.webBrowser1.Size = new System.Drawing.Size(833, 388);
             this.webBrowser1.TabIndex = 4;
             // 
             // menuStrip1
@@ -92,10 +93,12 @@
             // 
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Regresar,
-            this.toolStripMenuItem2});
+            this.toolStripMenuItem2,
+            this.Salir});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(60, 24);
             this.toolStripMenuItem1.Text = "Menu";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // Regresar
             // 
@@ -110,6 +113,13 @@
             this.toolStripMenuItem2.Size = new System.Drawing.Size(150, 26);
             this.toolStripMenuItem2.Text = "Avanzar";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click_1);
+            // 
+            // Salir
+            // 
+            this.Salir.Name = "Salir";
+            this.Salir.Size = new System.Drawing.Size(150, 26);
+            this.Salir.Text = "Salir";
+            this.Salir.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
             // 
             // Form1
             // 
@@ -138,6 +148,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem Regresar;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem Salir;
     }
 }
 
