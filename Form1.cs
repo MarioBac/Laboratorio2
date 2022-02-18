@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace WindowsFormsApp2
                 {
                     uri = "http://" + uri;
                     webBrowser1.Navigate(uri);
-
+                    comboBox1.Items.Add(uri);
+                    Guardar("Historial.txt", uri);
                 }
 
 
@@ -35,11 +37,18 @@ namespace WindowsFormsApp2
                 {
                     uri = "http://www.google.com/search?q=" + uri;
                     webBrowser1.Navigate(uri);
+                    comboBox1.Items.Add(uri);
+                    Guardar("Historial.txt", uri);
                 }
             }
             else {
                 webBrowser1.Navigate(new Uri(comboBox1.SelectedItem.ToString()));
+                string uri = comboBox1.Text.ToString();
+                comboBox1.Items.Add(uri);
+                Guardar("Historial.txt", uri);
             }
+           
+            
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -63,7 +72,17 @@ namespace WindowsFormsApp2
             webBrowser1.GoBack();
         }
 
-        
+        private void Guardar(string fileName, string texto)
+        {
+           
+            FileStream stream = new FileStream(fileName, FileMode.Append, FileAccess.Write);
+           
+            StreamWriter writer = new StreamWriter(stream);
+  
+            writer.WriteLine(texto);
+            
+            writer.Close();
+        }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -75,6 +94,29 @@ namespace WindowsFormsApp2
             
                 this.Close();
             
+        }
+
+       private void Leer (string fileName)
+        {
+            
+
+
+            FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            StreamReader reader = new StreamReader(stream);
+
+
+            while (reader.Peek() > -1)
+
+            {
+                comboBox1.Items.Add(reader.ReadLine());
+            }
+
+            reader.Close();
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            Leer("Historial.txt");
         }
     }
 }
