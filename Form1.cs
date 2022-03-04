@@ -13,43 +13,84 @@ namespace WindowsFormsApp2
 {
     public partial class Form1 : Form
     {
+        List<Url> urlList = new List<Url>();
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void menuToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            webBrowser1.Visible = true;
+            dataGridView1.Visible = false;
+            DeletePagButton.Visible = false;
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
 
-            if (comboBox1.SelectedIndex.Equals(-1))
-            {
-                string uri = comboBox1.Text.ToString();
-                if (uri.Contains(".") == true)
-                {
-                    uri = "http://" + uri;
-                    webBrowser1.Navigate(uri);
-                    comboBox1.Items.Add(uri);
-                    Guardar("Historial.txt", uri);
-                }
-
-
-                else if (uri.Contains(".") == false)
-                {
-                    uri = "http://www.google.com/search?q=" + uri;
-                    webBrowser1.Navigate(uri);
-                    comboBox1.Items.Add(uri);
-                    Guardar("Historial.txt", uri);
-                }
-            }
-            else {
-                webBrowser1.Navigate(new Uri(comboBox1.SelectedItem.ToString()));
-                string uri = comboBox1.Text.ToString();
-                comboBox1.Items.Add(uri);
-                Guardar("Historial.txt", uri);
-            }
-           
-            
         }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            DeletePagButton.Visible = false;
+            dataGridView1.Visible = false;
+            readFile("Historial.txt");
+            foreach (Url spark in urlList)
+            {
+                comboBox1.Items.Add(spark.Resource);
+
+            }
+            comboBox1.SelectedIndex = 0;
+            webBrowser1.GoHome();
+        }
+
+
+        private void GoButton_Click(object sender, EventArgs e)
+        {
+            string spark = "";
+            if (comboBox1.Text != null)
+            {
+                spark = comboBox1.Text;
+            }
+            else if (comboBox1.SelectedItem.ToString() != null)
+            {
+                spark = comboBox1.SelectedItem.ToString();
+
+            }
+            if (!spark.Contains("."))
+            {
+                spark = "http://www.google.com/search?q=" + spark;
+            }
+            else
+            {
+                spark = "http://" + spark;
+            }
+            webBrowser1.Navigate(new Uri(spark));
+            bool isRegisted = false;
+            foreach (var auxiliar in urlList)
+            {
+                if (auxiliar.Resource.Contains(spark))
+                {
+                    auxiliar.TimesVisited++;
+                    auxiliar.Date = DateTime.Now;
+                    isRegisted = true;
+                }
+
+            }
+            if (!isRegisted)
+            {
+                Url auxiliar = new Url();
+                comboBox1.Items.Add(spark);
+                auxiliar.Resource = spark;
+                auxiliar.TimesVisited++;
+                auxiliar.Date = DateTime.Now;
+                urlList.Add(auxiliar);
+            }
+
+            saveFile("Historial.txt");
+            comboBox1.Text = spark;
+        }
+
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -59,7 +100,7 @@ namespace WindowsFormsApp2
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-   
+
         }
 
         private void toolStripMenuItem2_Click_1(object sender, EventArgs e)
@@ -74,35 +115,30 @@ namespace WindowsFormsApp2
 
         private void Guardar(string fileName, string texto)
         {
-           
+
             FileStream stream = new FileStream(fileName, FileMode.Append, FileAccess.Write);
-           
+
             StreamWriter writer = new StreamWriter(stream);
-  
+
             writer.WriteLine(texto);
-            
+
             writer.Close();
         }
 
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            
-        }
-
+        
         private void toolStripMenuItem3_Click(object sender, EventArgs e)
         {
-            
-                this.Close();
-            
+
+            this.Close();
+
         }
 
-       private void Leer (string fileName)
+        private void Leer(string fileName)
         {
-            
 
 
-            FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            StreamReader reader = new StreamReader(stream);
+
+            StreamReader reader = new StreamReader(new FileStream(fileName, FileMode.Open, FileAccess.Read));
 
 
             while (reader.Peek() > -1)
@@ -113,10 +149,67 @@ namespace WindowsFormsApp2
 
             reader.Close();
         }
-        private void Form1_Load(object sender, EventArgs e)
+
+        private void readFile(string fileName)
+        {
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            StreamReader sr = new StreamReader(fs);
+            while (sr.Peek() != -1)
+            {
+                Url auxiliar = new Url();
+                auxiliar.Resource = sr.ReadLine();
+                auxiliar.TimesVisited = Convert.ToInt32(sr.ReadLine());
+                auxiliar.Date = Convert.ToDateTime(sr.ReadLine());
+                urlList.Add(auxiliar);
+            }
+            sr.Close();
+            fs.Close();
+        }
+
+        private void saveFile(string fileName)
+        {
+            FileStream stream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
+            StreamWriter sw = new StreamWriter(stream);
+            Console.WriteLine(urlList.Count + "<<<<");
+            foreach (var spark in urlList)
+            {
+                foreach (string s in spark.UrlData())
+                {
+                    sw.WriteLine(s);
+                }
+            }
+            sw.Close();
+            stream.Close();
+        }
+
+        private void DeletePagButton_Click(object sender, EventArgs e)
+        {
+            var confirmResult = MessageBox.Show("Estas seguro de eliminar esta pagina?",
+                                    "Confirma eliminar!",
+                                    MessageBoxButtons.YesNo);
+            if (confirmResult == DialogResult.Yes)
+            {
+                urlList.RemoveAt(dataGridView1.CurrentCell.RowIndex);
+                dataGridView1.DataSource = null;
+                saveFile("Historial.txt");
+            }
+
+            dataGridView1.DataSource = urlList.ToList();
+        }
+
+        private void historialToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            Leer("Historial.txt");
+        }
+
+        private void vistasDescendenteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = urlList.OrderByDescending(url => url.Date).ToList();
+        }
+
+        private void masVisitadoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = urlList.OrderBy(spark => spark.TimesVisited).ToList();
         }
     }
 }
